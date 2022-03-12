@@ -1,2 +1,3 @@
-# 3dprints
-3D print designs
+# 3D Print Designs
+
+This is my collection of 3D print designs in OpenSCAD.
