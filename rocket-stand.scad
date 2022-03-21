@@ -79,7 +79,7 @@ base_diam = 20;
 base_shell = 2;
 base_fins = 3;
 slot_thickness = 1.5;
-slot_slop = 0.8;
+slot_slop = 0.7;
 slot_len = 5;
 
 function fin_slot_height() = base_height - base_shell;
@@ -129,7 +129,7 @@ module base(diam = base_diam, height = base_height, shell = base_shell,
 }
 
 fin_height = 10;
-fin_length = 50;
+fin_length = 100;
 fin_width = 5;
 fin_skew = 5;
 fin_foot = 10;
@@ -142,9 +142,9 @@ module fin_outer_polygon() {
 }
 
 module fin(diam) {
-    translate([0, fin_height - fin_slot_height(base_height), fin_width / 2]) {
+    translate([0, fin_height - fin_slot_height(), fin_width / 2]) {
         rotate([-90, 0, 0]) {
-            fin_slot(fin_slot_height(base_height), 0);
+            fin_slot(fin_slot_height(), 0);
         }
     }
     linear_extrude(fin_width) {
@@ -164,7 +164,8 @@ module fin(diam) {
     }
 }
 
-base() { motor(); }
+// Make the base
+// base() { motor(); }
 
 // Test the T slots
 // t_slot_test(slot_len, fin_width - slot_thickness, [ for (i = [-0.2:0.1:0.2]) slot_slop + i ]);
@@ -173,5 +174,5 @@ base() { motor(); }
 // base(height = 5, shell = 0.5, with_top = false);
 
 // Make the fins
-// for (i = [0 : 2]) translate([0, i * 30, 0]) fin(base_diam);
+for (i = [0 : 2]) translate([0, i * 30, 0]) fin(base_diam);
 
