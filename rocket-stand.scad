@@ -28,18 +28,20 @@ module motor() {
         down(eps) linear_extrude(stem_extra + 2 * eps) circle(stem_diam / 2);
     }
     up(stem_extra) motor_flange() {
-        motor_insert();
+        motor_insert(motor_height);
     }
 
 }
 
-module motor_insert() {
+module motor_insert(height) {
+    eps = 0.01;
+    chamfer = min([ motor_diam / 2 - eps, height / 4 - eps ]);
     // The motor insert part
     down(eps) intersection() {
-        cyl(h = motor_height + eps, d = motor_diam,
-                chamfer2 = motor_diam / 2 - eps, anchor = BOTTOM);
+        cyl(h = height + eps, d = motor_diam,
+                chamfer2 = chamfer, anchor = BOTTOM);
         for (alpha = [45, 135]) {
-            rotate(alpha) cube([motor_diam, motor_shell, motor_height + eps],
+            rotate(alpha) cube([motor_diam, motor_shell, height + eps],
                     anchor = BOTTOM);
         }
     }
@@ -77,27 +79,31 @@ base_diam = 20;
 base_shell = 2;
 base_fins = 3;
 slot_thickness = 1.5;
-slot_slop = 0.4;
+slot_slop = 0.8;
+slot_len = 5;
 
 function fin_slot_height() = base_height - base_shell;
-module fin_slot(diam, height, slop = 0) {
-    t_slot([diam / 4, fin_width - slot_thickness, height],
+module fin_slot(height, slop = 0) {
+    t_slot([slot_len, fin_width - slot_thickness, height],
             slot_thickness + slop);
 }
 
-module base(diam) {
+module base(diam = base_diam, height = base_height, shell = base_shell,
+        with_top = true) {
+
+    fin_slot_height = height - shell;
 
     difference() {
 
         // Main body of base
-        cyl(d = diam, h = base_height, anchor = BOTTOM,
+        cyl(d = diam, h = height, anchor = BOTTOM,
                 chamfer1 = base_shell / 3);
 
         // Cut out the fin slots
         for (i = [1 : base_fins]) {
             rotate(360 * i / base_fins) {
                 translate([diam / 2, 0, -eps]) {
-                    fin_slot(diam, fin_slot_height() + eps, slot_slop);
+                    fin_slot(fin_slot_height + eps, slot_slop);
                 }
             }
         }
@@ -105,7 +111,7 @@ module base(diam) {
     }
 
     // Taper up to the stem diameter
-    up(base_height - eps) {
+    if (with_top) up(height - eps) {
         rotate_extrude() {
             difference() {
                 square([diam / 2, base_stem_height + eps]);
@@ -119,7 +125,7 @@ module base(diam) {
     }
 
     // Put any children atop the base
-    up(base_height + base_stem_height) children();
+    up(height + (with_top ? base_stem_height : 0)) children();
 }
 
 fin_height = 10;
@@ -136,9 +142,9 @@ module fin_outer_polygon() {
 }
 
 module fin(diam) {
-    translate([0, fin_height - fin_slot_height(), fin_width / 2]) {
+    translate([0, fin_height - fin_slot_height(base_height), fin_width / 2]) {
         rotate([-90, 0, 0]) {
-            fin_slot(diam, fin_slot_height(), 0);
+            fin_slot(fin_slot_height(base_height), 0);
         }
     }
     linear_extrude(fin_width) {
@@ -147,6 +153,8 @@ module fin(diam) {
             offset(delta = -fin_shell) fin_outer_polygon();
         }
     }
+
+    // Slight cylindrical cutout
     difference() {
         left(diam / 2) cube([diam / 2 + eps, fin_height, fin_width]);
         translate([0, -eps, fin_width / 2]) {
@@ -156,8 +164,14 @@ module fin(diam) {
     }
 }
 
-base(base_diam) {
-    motor();
-}
-//base(base_diam);
-//translate([0, 30, 0]) fin(base_diam);
+base() { motor(); }
+
+// Test the T slots
+// t_slot_test(slot_len, fin_width - slot_thickness, [ for (i = [-0.2:0.1:0.2]) slot_slop + i ]);
+
+// Test the base for fit
+// base(height = 5, shell = 0.5, with_top = false);
+
+// Make the fins
+// for (i = [0 : 2]) translate([0, i * 30, 0]) fin(base_diam);
+
