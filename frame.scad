@@ -4,8 +4,8 @@ $fa = 1;
 $fs = 0.4;
 
 
-width = 140;
-length = 105;
+width = 108;
+length = 140;
 slop = 1;
 rabbet_width = 10;
 rabbet_height = 8;
