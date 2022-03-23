@@ -6,6 +6,7 @@ include <BOSL2/std.scad>
 include <BOSL2/rounding.scad>
 include <lib/tslot.scad>
 include <lib/production.scad>
+include <lib/tessellate.scad>
 
 motor_diam = 18;
 motor_height = 30;
@@ -131,13 +132,14 @@ module base(diam = base_diam, height = base_height, shell = base_shell,
 fin_height = 10;
 fin_length = 100;
 fin_width = 5;
-fin_skew = 5;
+fin_skew = 10;
 fin_foot = 10;
 fin_shell = 1;
+fin_infill_size = 5;
 
 module fin_outer_polygon() {
     polygon([ [0, 0], [0, fin_height],
-            [fin_length, fin_shell - fin_skew],
+            [fin_length, 1.75 * fin_shell - fin_skew],
             [fin_length, -fin_skew], [fin_length - fin_foot, -fin_skew]]);
 }
 
@@ -150,7 +152,15 @@ module fin(diam) {
     linear_extrude(fin_width) {
         difference() {
             fin_outer_polygon();
-            offset(delta = -fin_shell) fin_outer_polygon();
+            intersection() {
+                offset(delta = -fin_shell) fin_outer_polygon();
+                fwd(fin_skew) {
+                    hex_tessellate(fin_length, fin_height + fin_skew,
+                            fin_infill_size) {
+                        hexagon(d = fin_infill_size - 0.6);
+                    }
+                }
+            }
         }
     }
 
