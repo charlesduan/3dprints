@@ -11,8 +11,8 @@ motor_diam = 18;
 motor_height = 30;
 motor_shell = 1;
 
-stem_diam = 5;
-stem_extra = 5;
+stem_diam = 15;
+stem_extra = 1;
 
 motor_flange = 3;
 motor_flange_rad = 5;
@@ -129,7 +129,7 @@ module base(diam = base_diam, height = base_height, shell = base_shell,
 }
 
 fin_height = 10;
-fin_length = 100;
+fin_length = 60;
 fin_width = 5;
 fin_skew = 5;
 fin_foot = 10;
@@ -142,7 +142,8 @@ module fin_outer_polygon() {
 }
 
 module fin(diam) {
-    translate([0, fin_height - fin_slot_height(), fin_width / 2]) {
+    fin_height = base_height;
+    translate([0, 0, fin_width / 2]) {
         rotate([-90, 0, 0]) {
             fin_slot(fin_slot_height(), 0);
         }
@@ -165,7 +166,7 @@ module fin(diam) {
 }
 
 // Make the base
-// base() { motor(); }
+translate([0, -30, 0]) base() { motor(); }
 
 // Test the T slots
 // t_slot_test(slot_len, fin_width - slot_thickness, [ for (i = [-0.2:0.1:0.2]) slot_slop + i ]);
