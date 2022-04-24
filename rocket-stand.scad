@@ -13,9 +13,9 @@ motor_height = 30;
 motor_shell = 1;
 
 stem_diam = 15;
-stem_extra = 1;
+stem_extra = 10;
 
-motor_flange = 3;
+motor_flange = 1;
 motor_flange_rad = 5;
 hook_gap = 5;
 hook_inset = 4;
@@ -74,7 +74,7 @@ module motor_flange() {
 }
 
 
-base_height = 10;
+base_height = 15;
 base_stem_height = 5;
 base_diam = 20;
 base_shell = 2;
@@ -129,7 +129,6 @@ module base(diam = base_diam, height = base_height, shell = base_shell,
     up(height + (with_top ? base_stem_height : 0)) children();
 }
 
-fin_height = 10;
 fin_length = 60;
 fin_width = 5;
 fin_skew = 10;
@@ -137,7 +136,7 @@ fin_foot = 10;
 fin_shell = 1;
 fin_infill_size = 5;
 
-module fin_outer_polygon() {
+module fin_outer_polygon(fin_height) {
     polygon([ [0, 0], [0, fin_height],
             [fin_length, 1.75 * fin_shell - fin_skew],
             [fin_length, -fin_skew], [fin_length - fin_foot, -fin_skew]]);
@@ -152,13 +151,13 @@ module fin(diam) {
     }
     linear_extrude(fin_width) {
         difference() {
-            fin_outer_polygon();
+            fin_outer_polygon(fin_height);
             intersection() {
-                offset(delta = -fin_shell) fin_outer_polygon();
+                offset(delta = -fin_shell) fin_outer_polygon(fin_height);
                 fwd(fin_skew) {
                     hex_tessellate(fin_length, fin_height + fin_skew,
                             fin_infill_size) {
-                        hexagon(d = fin_infill_size - 0.6);
+                        hexagon(d = fin_infill_size - 1.2);
                     }
                 }
             }

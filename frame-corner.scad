@@ -73,7 +73,7 @@ module nail_hole(entry_point, zrot, vert = true) {
 
 difference() {
     intersection() {
-        cube(30, anchor = BOTTOM + LEFT + FRONT);
+        //cube(30, anchor = BOTTOM + LEFT + FRONT);
         main_body();
     }
     nail_hole([side / 2, 0, wall_shell + extra_space / 2], 0);
