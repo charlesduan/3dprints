@@ -76,12 +76,12 @@ module motor_flange() {
 
 base_height = 15;
 base_stem_height = 5;
-base_diam = 20;
+base_diam = 30;
 base_shell = 2;
 base_fins = 3;
-slot_thickness = 1.5;
+slot_thickness = 3;
 slot_slop = 0.7;
-slot_len = 5;
+slot_len = 8;
 
 function fin_slot_height() = base_height - base_shell;
 module fin_slot(height, slop = 0) {
@@ -130,7 +130,7 @@ module base(diam = base_diam, height = base_height, shell = base_shell,
 }
 
 fin_length = 60;
-fin_width = 5;
+fin_width = 8;
 fin_skew = 10;
 fin_foot = 10;
 fin_shell = 1;
