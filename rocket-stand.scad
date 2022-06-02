@@ -8,26 +8,24 @@ include <lib/tslot.scad>
 include <lib/production.scad>
 include <lib/tessellate.scad>
 
-motor_diam = 18;
+// C motor is 18, A motor is 13
+motor_diam = 13;
 motor_height = 30;
 motor_shell = 1;
 
-stem_diam = 15;
-stem_extra = 10;
+stem_diam = 10;
+stem_extra = 20;
 
 motor_flange = 1;
 motor_flange_rad = 5;
 hook_gap = 5;
 hook_inset = 4;
-hook_depth = 10;
+hook_depth = 20;
 
 eps = 0.01;
 
 module motor() {
 
-    if (stem_extra > 0) {
-        down(eps) linear_extrude(stem_extra + 2 * eps) circle(stem_diam / 2);
-    }
     up(stem_extra) motor_flange() {
         motor_insert(motor_height);
     }
@@ -58,8 +56,15 @@ module motor_flange() {
     difference() {
 
         // Flange
-        rotate_extrude() {
-            polygon(concat(rc, [ [0, main_h + extra_h], [0, -eps] ]));
+        union() {
+            rotate_extrude() {
+                polygon(concat(rc, [ [0, main_h + extra_h], [0, -eps] ]));
+            }
+            if (stem_extra > 0) {
+                down(stem_extra + eps) {
+                    linear_extrude(stem_extra + 2 * eps) circle(stem_diam / 2);
+                }
+            }
         }
 
         // Hook cutout
@@ -70,7 +75,9 @@ module motor_flange() {
                     hook_depth + eps], anchor = TOP + BACK);
         }
     }
-    up(main_h + extra_h) children();
+
+    // Material above stand
+    up(main_h + extra_h) children(0);
 }
 
 
@@ -80,7 +87,7 @@ base_diam = 30;
 base_shell = 2;
 base_fins = 3;
 slot_thickness = 3;
-slot_slop = 0.7;
+slot_slop = 0.5;
 slot_len = 8;
 
 function fin_slot_height() = base_height - base_shell;
@@ -129,7 +136,7 @@ module base(diam = base_diam, height = base_height, shell = base_shell,
     up(height + (with_top ? base_stem_height : 0)) children();
 }
 
-fin_length = 60;
+fin_length = 110;
 fin_width = 8;
 fin_skew = 10;
 fin_foot = 10;
@@ -149,16 +156,12 @@ module fin(diam) {
             fin_slot(fin_slot_height(), 0);
         }
     }
-    linear_extrude(fin_width) {
-        difference() {
-            fin_outer_polygon(fin_height);
-            intersection() {
-                offset(delta = -fin_shell) fin_outer_polygon(fin_height);
-                fwd(fin_skew) {
-                    hex_tessellate(fin_length, fin_height + fin_skew,
-                            fin_infill_size) {
-                        hexagon(d = fin_infill_size - 1.2);
-                    }
+    difference() {
+        linear_extrude(fin_width) fin_outer_polygon(fin_height);
+        for (i = [0:1]) {
+            up(i * (fin_width + fin_shell + 2 * eps) / 2 - eps) {
+                linear_extrude((fin_width - fin_shell) / 2 + eps) {
+                    offset(delta = -fin_shell) fin_outer_polygon(fin_height);
                 }
             }
         }
