@@ -31,7 +31,7 @@ eps = 0.01;
 
 thickness = 11.5;
 bottom_gap = 3.5;
-top_gap = 6.5;
+top_gap = 6;
 
 difference() {
     up(thickness / 2) {
