@@ -25,6 +25,10 @@ door_offset = 25;
 // to cut out parts of the door.
 door_profile = [ [0, 0], [2, 5], [8, 5], [8, 13], [2, 13], [0, 18] ];
 
+// How much material to leave inside the handle to prevent sticking your hands
+// all the way through
+door_inset_shell = 6 * 0.6;
+
 
 outer_round = 5;
 inner_round = 5;
@@ -58,9 +62,14 @@ difference() {
     // Inside door cutout
     down(inner_thickness + eps) offset_sweep(
         int_path,
-        outer_thickness + door_thickness + inner_thickness + 2 * eps,
-        top = os_circle(r = -outer_round),
+        eps + inner_thickness + (door_thickness - door_inset_shell) / 2,
         bottom = os_circle(r = 1)
+    );
+    up(door_thickness + outer_thickness + eps) offset_sweep(
+        int_path,
+        eps + outer_thickness + (door_thickness - door_inset_shell) / 2,
+        top = os_circle(r = -outer_round),
+        anchor = TOP
     );
 
     // Hole for inserting around door
