@@ -9,18 +9,36 @@ include <lib/production.scad>
 include <lib/tessellate.scad>
 
 // C motor is 18, A motor is 13
-motor_diam = 13;
-motor_height = 30;
+motor_diam = 18;
+motor_height = 40;
 motor_shell = 1;
 
 stem_diam = 10;
-stem_extra = 20;
+stem_extra = 10;
 
 motor_flange = 1;
 motor_flange_rad = 5;
 hook_gap = 5;
 hook_inset = 4;
 hook_depth = 20;
+
+base_height = 15;
+base_stem_height = 5;
+base_diam = 30;
+base_shell = 2;
+base_fins = 3;
+slot_thickness = 3;
+slot_slop = 0.5;
+slot_len = 8;
+
+fin_length = 50;
+fin_width = 8;
+fin_skew = 10;
+fin_foot = 10;
+fin_shell = 1;
+fin_infill_size = 5;
+
+
 
 eps = 0.01;
 
@@ -81,15 +99,6 @@ module motor_flange() {
 }
 
 
-base_height = 15;
-base_stem_height = 5;
-base_diam = 30;
-base_shell = 2;
-base_fins = 3;
-slot_thickness = 3;
-slot_slop = 0.5;
-slot_len = 8;
-
 function fin_slot_height() = base_height - base_shell;
 module fin_slot(height, slop = 0) {
     t_slot([slot_len, fin_width - slot_thickness, height],
@@ -135,13 +144,6 @@ module base(diam = base_diam, height = base_height, shell = base_shell,
     // Put any children atop the base
     up(height + (with_top ? base_stem_height : 0)) children();
 }
-
-fin_length = 110;
-fin_width = 8;
-fin_skew = 10;
-fin_foot = 10;
-fin_shell = 1;
-fin_infill_size = 5;
 
 module fin_outer_polygon(fin_height) {
     polygon([ [0, 0], [0, fin_height],

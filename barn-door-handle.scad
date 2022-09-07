@@ -16,16 +16,17 @@ outer_thickness = 5;
 inner_thickness = 5;
 
 // Thickness of the door itself. Default is 3/4"
-door_thickness = 18; 
-// door_thickness = 7;
+// door_thickness = 18; 
+door_thickness = 7;
 
 // How far from the door's edge the center of the handle will be.
+// door_offset = 25;
 door_offset = 18;
 
 // Path for the door's profile. It should extend into the positive x direction
 // to cut out parts of the door.
-door_profile = [ [0, 0], [2, 5], [8, 5], [8, 13], [2, 13], [0, 18] ];
-// door_profile = [ [0, 0], [2, 2], [5.5, 2], [5.5, 5], [2, 5], [0, 7] ];
+// door_profile = [ [0, 0], [2, 5], [8, 5], [8, 13], [2, 13], [0, 18] ];
+door_profile = [ [0, 0], [2, 2], [5.5, 2], [5.5, 5], [2, 5], [0, 7] ];
 
 // How much material to leave inside the handle to prevent sticking your hands
 // all the way through
@@ -61,7 +62,6 @@ difference() {
     );
 
     max_x = max([ for(c = ext_path) c.x ]);
-    echo(max_x);
 
     translate([max_x, 0, -eps]) wedge(
         [
