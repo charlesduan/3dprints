@@ -8,8 +8,8 @@ include <lib/tslot.scad>
 include <lib/production.scad>
 include <lib/tessellate.scad>
 
-// C motor is 18, A motor is 13
-motor_diam = 18;
+// D motor is 24, C motor is 18, A motor is 13
+motor_diam = 24;
 motor_height = 40;
 motor_shell = 1;
 

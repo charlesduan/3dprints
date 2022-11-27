@@ -7,9 +7,9 @@ $fs = 0.4;
 width = 108;
 length = 140;
 slop = 1;
-rabbet_width = 10;
+rabbet_width = 3;
 rabbet_height = 8;
-margin = 12;
+margin = 5;
 shell = 2;
 corner_round = 2;
 

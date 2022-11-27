@@ -4,14 +4,14 @@ include <lib/production.scad>
 
 outer_width = 50;
 inner_height = 32;
-thickness = 4;
-rim_width = 6;
+thickness = 4.5;
+rim_width = 5;
 center_bar_width = 8;
 center_bar_offset = 0;
-thickness_rounding = 1.5;
-corner_rounding = 8;
+thickness_rounding = 2;
+corner_rounding = 12;
 
-center_bar_cutout = 5;
+center_bar_cutout = 6;
 
 eps = 0.01;
 
