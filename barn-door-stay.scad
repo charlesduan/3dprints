@@ -1,8 +1,9 @@
 include <BOSL2/std.scad>
 include <lib/production.scad>
+include <lib/morescrews.scad>
 
 // Gap from wall to door
-wall_gap = 15;
+wall_gap = 45;
 
 // Thickness of door
 door_thickness = 20;
@@ -22,6 +23,8 @@ screw_head_height = 4;
 
 screw_hole_height = length / 5;
 
+max_screw_distance = 15;
+
 rounding = 3;
 eps = 0.01;
 
@@ -36,7 +39,7 @@ function total_width() = (
 // Bottom part. The origin is the center of the wall just above the bottom
 // shell.
 //
-up(eps) bottom_half() cuboid(
+up(eps) bottom_half(2 * max(total_width(), length)) cuboid(
     [total_width(), length, 2 * (bottom_thickness + eps)],
     anchor = LEFT,
     rounding = rounding,
@@ -48,7 +51,7 @@ right(total_width()) difference() {
     //
     // Outer stay
     //
-    top_half(length) xcyl(
+    top_half(2 * max(length, side_thickness)) xcyl(
         l = side_thickness, d = length,
         rounding = rounding,
         anchor = RIGHT
@@ -67,27 +70,21 @@ difference() {
     //
     // Inner stay
     //
-    top_half(length) xcyl(
+    top_half(2 * max(inner_stay_width(), length)) xcyl(
         l = inner_stay_width(), d = length,
         rounding2 = rounding,
         anchor = LEFT
     );
 
-    // Translate to the right edge of the inner stay plus eps
-    translate([eps + inner_stay_width(), 0, screw_hole_height]) {
-
-        // Hole for screw shank
-        xcyl(
-            l = inner_stay_width() + 2 * eps, d = screw_shank_diam,
-            anchor = RIGHT
-        );
-
-        xcyl(
-            l = screw_head_height + eps,
-            d1 = screw_shank_diam, d2 = screw_head_diam,
-            anchor = RIGHT
-        );
-    }
-
+    screw_hole(
+        shank_d = screw_shank_diam,
+        head_d = screw_head_diam,
+        countersink = screw_head_height,
+        dir = LEFT,
+        at = [
+            min(max_screw_distance, eps + inner_stay_width()),
+            0, screw_hole_height
+        ]
+    );
 
 }
