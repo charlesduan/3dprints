@@ -1,2 +1,2 @@
-$fa = 1;
-$fs = 0.4;
+$fa = $preview ? 12 : 1;
+$fs = $preview ? 2 : 0.4;
