@@ -5,6 +5,7 @@
 
 include <BOSL2/std.scad>
 include <lib/production.scad>
+include <lib/nails.scad>
 
 
 // Size of outer edge of the corner
@@ -31,24 +32,12 @@ extra_space = 10;
 // plus shell.
 rabbet_width = 5;
 
-// Diameter of the nail. No printer slop is added.
-nail_diam = 2.5;
-
 eps = 0.01;
 
 // Total height of the frame part.
 function whole_height() = (
         wall_shell + extra_space + 2 * shell + media_thickness
 );
-
-
-// Make a single nail hole.
-module nail_hole(entry_point, zrot, vert = true) {
-    translate(entry_point) rotate([45, 0, zrot]) up(eps) {
-        cylinder(h = whole_height() * sqrt(2) + eps, d = nail_diam,
-                anchor = TOP + (vert ? BACK : FRONT));
-    }
-}
 
 /*
  * Make the cutouts from the frame. The cutouts will be larger than width x

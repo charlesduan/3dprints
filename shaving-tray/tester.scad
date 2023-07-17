@@ -1,3 +1,5 @@
+include <base.scad>
+
 // Test hexagon for fitting onto stem.
 //
 module tester_hexagon() {
@@ -17,4 +19,15 @@ module tester_hexagon() {
     }
 }
 
-tester();
+module outer_hexagon(height, shell) {
+    linear_extrude(height) {
+        difference() {
+            hexagon(od = outer_stem_diam + 2 * shell + stem_slop);
+            hexagon(od = outer_stem_diam + stem_slop);
+        }
+    }
+}
+
+
+
+outer_hexagon(20, 5);
