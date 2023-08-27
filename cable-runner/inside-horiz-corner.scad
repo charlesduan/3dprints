@@ -1,109 +1,48 @@
-//include <../lib/production.scad>
+include <../lib/production.scad>
 include <BOSL2/std.scad>
+include <params.scad>
 
 /*
  * Creates a corner element for a cable runner for a horizontal-running cable
  * that traverses an inside corner bend.
  */
 
-// x is the length of the cable runner body from wall to end, in both the x and
-// y directions. y is the runner channel width (side to side), and z the channel
-// height (wall to end).
-size = [ 50, 20, 10 ];
-
-// Thickness of the outside cover.
-shell = 0.6 * 3;
+// Size of the runner's legs along the x and y axes, respectively.
+size = [ 50, 100 ];
 
 // Inside radius of the corner bend of the channel where the cables go
 channel_r = 20;
 
-// Rounding radius for the wall corner.
-wall_rounding = 5;
+// Cutoff for the wall corner.
+wall_chamfer = 5;
 
-// Rounding of the inside edges of the runner.
-rounding = 5;
+// Relative positions of the nail holes, which will be placed along the y axis.
+nail_holes = [ 0.3, 0.6 ];
 
-eps = 0.01;
+union() {
+    cable_path = round_corners(
+        [ [ size.x, 0 ], [ 0, 0 ], [ 0, -size.y ] ],
+        radius = channel_r + xsec.y,
+        closed = false
+    );
 
-/*
- * The runner has its lower corner at the origin, with cable outlets along the
- * positive X and negative Y axes.
- */
-diff() cuboid(
-    [ size.x, size.x, size.y + 2 * shell ],
-    rounding = wall_rounding,
-    edges = BACK + LEFT,
-    anchor = BACK + BOTTOM + LEFT
-) {
-
-    // Shape the outside shell.
-    position(BACK + BOTTOM + LEFT) down(eps) tag("remove") {
-
-        cyl_center = size.z + channel_r;
-        runner_edge = size.z + shell;
-        outer_round = rounding + shell + eps;
-        tot_h = size.y + 2 * (shell + eps);
-
-        // Round portion
-        translate([cyl_center, -cyl_center]) cyl(
-            r = channel_r - shell,
-            h = tot_h,
-            rounding = -outer_round,
-            anchor = BOTTOM
-        );
-
-        // Parallel to X axis
-        translate([cyl_center, -runner_edge]) cuboid(
-            [ size.x, size.x, tot_h ],
-            rounding = -outer_round,
-            edges = BACK,
-            except = "Z",
-            anchor = BACK + BOTTOM + LEFT
-        );
-
-        // Parallel to Y axis
-        translate([runner_edge, -cyl_center]) cuboid(
-            [ size.x, size.x, tot_h ],
-            rounding = -outer_round,
-            edges = LEFT,
-            except = "Z",
-            anchor = BACK + BOTTOM + LEFT
-        );
-    }
-
-    // Cut out the inside channel of the runner. Anchor is the center of the
-    // back corner.
-    position(BACK + LEFT) translate([-eps, eps, 0]) tag("remove") {
-
-        // Parallel to X axis
-        cuboid(
-            [ size.x + 2 * eps, size.z, size.y ],
-            rounding = rounding,
-            edges = FRONT,
-            except = "Z",
-            anchor = BACK + LEFT
-        );
-
-        // Parallel to Y axis
-        cuboid(
-            [ size.z, size.x + 2 * eps, size.y ],
-            rounding = rounding,
-            edges = RIGHT,
-            except = "Z",
-            anchor = BACK + LEFT
-        );
-
-        cyl_center = size.z + channel_r + eps;
-        tag_diff("remove") tag("blah") cuboid(
-            [ cyl_center, cyl_center, size.y ],
-            anchor = BACK + LEFT
-        ) {
-            tag("remove") position(FRONT + RIGHT) cyl(
-                h = size.y + 2 * eps,
-                r = channel_r,
-                rounding = -rounding - eps,
-                anchor = CENTER
-            );
+    diff("hole", keep="triangle") path_sweep(vert_xsec_path(), cable_path) {
+        position(FRONT + LEFT + TOP) ycopies(nail_holes * size.y) {
+            zrot(90) nail_triangle(d = 7, rounding = outer_round());
         }
     }
+
+    zcopies(xsec.x + shell, 2, sp = 0) diff() cuboid(
+        [ channel_r + xsec.y, channel_r + xsec.y, shell ],
+        chamfer = wall_chamfer,
+        edges = BACK + LEFT,
+        anchor = BACK + LEFT + BOTTOM
+    ) {
+        tag("remove") position(FRONT + RIGHT) cyl(
+            r = channel_r + xsec.y / 2,
+            h = shell + 2 * eps,
+            anchor = CENTER
+        );
+    }
+
 }
