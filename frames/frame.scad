@@ -1,5 +1,5 @@
 include <BOSL2/std.scad>
-include <lib/production.scad>
+include <../lib/production.scad>
 
 /*
  * Makes a picture frame capable of holding a card.

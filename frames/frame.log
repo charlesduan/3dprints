@@ -1,0 +1,12 @@
+This is METAFONT, Version 2.71828182 (preloaded base=mf 2023.7.28)  10 SEP 2023 14:24
+**frame.scad frame.stl frames
+(frame.scad
+>> BOSL2
+>> std.scad
+! Not implemented: (unknown numeric)/(unknown numeric).
+<to be read again> 
+                   >
+l.1 include <BOSL2/std.scad>
+                            
+? X
+

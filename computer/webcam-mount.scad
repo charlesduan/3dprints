@@ -2,7 +2,7 @@ include <../lib/production.scad>
 include <BOSL2/std.scad>
 include <BOSL2/rounding.scad>
 
-$fs = 0.2;
+//$fs = 0.2;
 
 /*
  * Measured variables
@@ -37,13 +37,12 @@ nut_d = [ 6.35, 0, 2.4 ];
  * Discretionary variables
  */
 
-// x is the width of the holder body, y the thickness of the back portion, and z
-// the thickness of the top portion.
-holder_d = [ 20, 3, camera_knuckle_d.z ];
+// x is the width of the holder body, y the thickness of the back portion.
+holder_d = [ 10, 3 ];
 
 // Front stop size for holding against the front of the monitor. y is the
 // thickness of the stop, z the downward drop distance, x is ignored.
-front_stop_d = [ 0, 3, 3 ];
+front_stop_d = [ 0, 3, 3.5 ];
 
 // Extra distance that the stand should extend beyond the front of the monitor.
 extra_y = 5;
@@ -54,7 +53,16 @@ hinge_extra_y = 0;
 // Radius of rounding.
 round_radius = 1;
 
+// Whether the camera should be mounted vertically rather than horizontally.
+vertical_mount = true;
 
+
+
+// The thickness of the top part of the mount, which needs to be equal to the
+// width of the knuckle (based on vertical or horizontal mounting).
+function top_thickness() = vertical_mount
+    ? camera_knuckle_d.x + 4 + screw_d.z + nut_d.z
+    : camera_knuckle_d.z;
 
 
 /*
@@ -69,27 +77,37 @@ function back_line_point(zcoord, radius) = point3d(line_intersection(
     [ [ 0, zcoord ], [ 1, zcoord ] ]
 ), fill = radius);
 
+/*
+ * Polygon for the cross-section of the stand's overall profile. The z
+ * coordinate is the rounding radius.
+ */
 function stand_profile_with_radii() = [
     [ 0, 0, 0 ],
     [ back_d.y, -back_d.z, 0 ],
     [ back_d.y - back_stop_d.y, -back_d.z, back_stop_d.z ],
     [ back_d.y - back_stop_d.y, -tot_back_z(), back_stop_d.z ],
     back_line_point(-tot_back_z(), back_stop_d.z),
-    back_line_point(holder_d.z, holder_d.z),
-    [ -tot_front_y(), holder_d.z, holder_d.z ],
-    [ -tot_front_y(), 0, holder_d.z ],
+    back_line_point(top_thickness(), top_thickness()),
+    [ -tot_front_y(), top_thickness(), top_thickness() ],
+    [ -tot_front_y(), 0, top_thickness() ],
     [ -tot_front_y() + extra_y, 0, 0 ],
     [ -tot_front_y() + extra_y, -front_stop_d.z, front_stop_d.y ],
     [ -monitor_top_y, -front_stop_d.z, front_stop_d.y ],
     [ -monitor_top_y, 0, 0 ]
 ];
 
+/*
+ * The cross-section of the stand, with corners rounded.
+ */
 function stand_profile(round_func) = round_corners(
     path2d(stand_profile_with_radii()),
     r = [ for (p = stand_profile_with_radii()) round_func(p.z) ]
 );
 
 
+/*
+ * Extrude the stand based on its cross-section.
+ */
 left(holder_d.x / 2) offset_sweep(
     stand_profile(function(x) min([ x / 2, round_radius ])),
     h = holder_d.x,
@@ -100,22 +118,26 @@ left(holder_d.x / 2) offset_sweep(
 );
 
 
+/*
+ * The hinge insertion point.
+ */
 module hinge_knuckle(
-    gap_h,
-    d,
-    extra_length,
-    shank_d,
+    gap_h,              // Gap into which the camera hinge knuckle fits
+    d,                  // Diameter of the camera's hinge knuckle
+    extra_length,       // How far out this hinge knuckle extends
+    shank_d,            // Bolt dimensions
     head_d,
     head_h,
-    nut_d,
+    nut_d,              // Nut dimensions
     nut_h,
-    shell,
+    shell,              // Thickness between camera knuckle and nut/bolt
     rounding = 0,
     anchor,
     spin = 0,
     orient = UP
 ) {
     eps = 0.01;
+    // Total width of the hinge.
     width = gap_h + 2 * shell + head_h + nut_h;
     diff() xcyl(
         h = width, d = d,
@@ -149,6 +171,9 @@ module hinge_knuckle(
 }
 
 fwd(tot_front_y() + hinge_extra_y + camera_knuckle_d.z / 2) {
+    knuckle_anchor = vertical_mount ? RIGHT : BOTTOM;
+    knuckle_orient = vertical_mount ? RIGHT : UP;
+    knuckle_up = vertical_mount ? top_thickness() : 0;
     hinge_knuckle(
         gap_h = camera_knuckle_d.x,
         d = camera_knuckle_d.z,
@@ -160,6 +185,7 @@ fwd(tot_front_y() + hinge_extra_y + camera_knuckle_d.z / 2) {
         nut_h = nut_d.z,
         shell = 2,
         rounding = round_radius,
-        anchor = BOTTOM
+        anchor = knuckle_anchor,
+        orient = knuckle_orient
     );
 }
