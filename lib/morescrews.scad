@@ -32,7 +32,7 @@ module thread_mask(name, thickness, thread="coarse", oversize=0,
  *              mask. Default 100
  * dir:         Rotate the screw to point toward a vector dir.
  */
-module screw_hole(
+module old_screw_hole(
     shank_d, head_d, countersink = 0, shank_l = 100, head_l = 100,
     dir = DOWN, at = [0, 0, 0]
 ) {
@@ -47,3 +47,5 @@ module screw_hole(
         [ 0, -countersink - shank_l ]
     ]);
 }
+
+
