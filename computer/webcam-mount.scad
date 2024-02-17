@@ -54,7 +54,7 @@ hinge_extra_y = 0;
 round_radius = 1;
 
 // Whether the camera should be mounted vertically rather than horizontally.
-vertical_mount = true;
+vertical_mount = false;
 
 
 
@@ -104,13 +104,16 @@ function stand_profile(round_func) = round_corners(
     r = [ for (p = stand_profile_with_radii()) round_func(p.z) ]
 );
 
+function holder_width() = vertical_mount ?
+        holder_d.x : camera_knuckle_d.x + screw_d.z + nut_d.z + 4;
+
 
 /*
  * Extrude the stand based on its cross-section.
  */
-left(holder_d.x / 2) offset_sweep(
+left(holder_width() / 2) offset_sweep(
     stand_profile(function(x) min([ x / 2, round_radius ])),
-    h = holder_d.x,
+    h = holder_width(),
     bottom = os_circle(round_radius),
     top = os_circle(round_radius),
     spin = 90,

@@ -17,7 +17,7 @@ base_width = 170;
 top_hole_width = 100;
 
 // Thickness of the lampshade, measured horizontally.
-shell = 5 * 0.6;
+shell = 2 * 0.6;
 
 // Dimensions of the holder bracket. x is the inner diameter, y the outer
 // diameter, z the thickness.
@@ -30,7 +30,7 @@ arm_w = 10;
 arm_n = 3;
 
 // Rounding for the main body
-body_round = 1.0;
+body_round = shell / 3;
 
 // Rounding for the bracket
 bracket_round = 1;
