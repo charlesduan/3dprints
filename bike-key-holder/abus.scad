@@ -29,6 +29,8 @@ thumb_pull_d = [ 22, 7, 0 ];
 
 eps = 0.01;
 
+function height() = key_d.z + 2 * shell.z;
+
 // Half the height of the key holder.
 function half_height() = key_d.z / 2 + shell.z;
 
@@ -41,29 +43,28 @@ difference() {
         // The keysmart holder area
         cyl(
             d = hole_diam + 2 * hole_shell,
-            h = half_height(),
+            h = height(),
             anchor = BOTTOM
         );
 
         // The key holding area
         cuboid(
-            [ key_d.x + 2 * shell.x, key_d.y + hole_edge(), half_height() ],
+            [ key_d.x + 2 * shell.x, key_d.y + hole_edge(), height() ],
             anchor = BOTTOM + BACK
         );
 
         // The thumb pull
         fwd(thumb_pull_d.z) cuboid(
-            [ thumb_pull_d.x, thumb_pull_d.y, half_height() ],
+            [ thumb_pull_d.x, thumb_pull_d.y, height() ],
             anchor = BOTTOM + BACK,
-            rounding = half_height() / 2,
-            except = TOP
+            rounding = half_height() / 2
         );
     }
 
     // Keysmart hole
     down(eps) cyl(
         d = hole_diam,
-        h = half_height() + 2 * eps,
+        h = height() + 2 * eps,
         anchor = BOTTOM
     );
 
