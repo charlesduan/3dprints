@@ -1,5 +1,5 @@
 include <BOSL2/std.scad>
-include <lib/production.scad>
+include <../lib/production.scad>
 
 // Width of the box
 width = 160;
