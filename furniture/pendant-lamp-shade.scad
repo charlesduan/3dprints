@@ -24,7 +24,7 @@ base_angle = 70;
 opening_d = [ 45, 120 ];
 
 // Side thickness.
-shell = 1;
+shell = 0.6;
 
 eps = 0.01;
 

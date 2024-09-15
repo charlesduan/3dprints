@@ -1,5 +1,5 @@
-include <BOSL2/std.scad>
-include <BOSL2/screws.scad>
+include <../BOSL2/std.scad>
+include <../BOSL2/screws.scad>
 
 module thread_mask(name, thickness, thread="coarse", oversize=0,
         tolerance=undef, anchor=BOTTOM,spin=0,orient=UP) {
