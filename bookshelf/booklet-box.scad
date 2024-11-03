@@ -17,7 +17,7 @@ width = 50;
 flat_length = 20;
 
 // Front and back height, as fractions of booklet height.
-height_fracs = [ 0.8, 0.3 ];
+height_fracs = [ 0.8, 3 * 25.4 ];
 
 // Side shell.
 side_shell = 0.6 * 3;
@@ -47,12 +47,13 @@ label_margin = 10;
 
 eps = 0.01;
 
-
 // Calculates the side height based on an index to height_fracs.
-function side_height(idx) = height_fracs[idx] * booklet.y + bot_shell;
+function side_height(idx) = bot_shell + (
+    height_fracs[idx] >= 1 ? height_fracs[idx] : height_fracs[idx] * booklet.y
+);
 
-// Calculates the total side width.
-function side_width() = booklet.x + 2 * side_shell
+// Calculates the total side length.
+function side_length() = booklet.x + 2 * side_shell
     + label_thickness + label_shell;
 
 // Calculates the two top points defining the diagonal edge of the box.
@@ -65,7 +66,7 @@ function top_points() = [
 function side_path() = let(p = top_points()) round_corners(
     [
         [ 0, 0 ], [ 0, p[0].y ], p[0], p[1],
-        [ side_width(), p[1].y ], [ side_width(), 0 ]
+        [ side_length(), p[1].y ], [ side_length(), 0 ]
     ],
     r = [
         edge_round, edge_round, corner_round,
@@ -105,14 +106,14 @@ difference() {
     }
 
     // Label insert area
-    translate([ side_width() - label_shell, -side_shell, bot_shell ]) cuboid(
+    translate([ side_length() - label_shell, -side_shell, bot_shell ]) cuboid(
         [ label_thickness, width, side_height(1) + eps ],
         anchor = BOTTOM + BACK + RIGHT
     );
 
     // Label window
     translate([
-        side_width() + eps,
+        side_length() + eps,
         -side_shell - label_margin,
         bot_shell + label_margin
     ]) cuboid(
