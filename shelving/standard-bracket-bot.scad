@@ -28,6 +28,11 @@ flange = 15;
 // Flange thickness.
 flange_shell = 3;
 
+// Amount to raise the flange from flush bottom.
+flange_offset = 0;
+
+// Angle of the flange bottom.
+flange_angle = 30;
 
 // Type of screw to use for the flange.
 screw_struct = screw_info("#8", head = "flat");
@@ -42,13 +47,28 @@ diff() cuboid(
 ) {
 
     // The screw flange
-    position(BOT) cuboid(
-        [ rail_in_d.x, flange + shell / 2, flange_shell ],
-        rounding = shell_rounding, except = [ BACK, BOT ],
-        anchor = BACK + BOT
-    ) position (TOP) fwd(shell / 4) screw_hole(
-        screw_struct, length = shell + 10, anchor = "head_top"
-    );
+    position(BOT) up(flange_offset) {
+        if (flange_angle == 0) {
+            cuboid(
+                [ rail_in_d.x, flange + shell / 2, flange_shell ],
+                rounding = shell_rounding, except = [ BACK, BOT ],
+                anchor = BACK + BOT
+            ) position (TOP) fwd(shell / 4) screw_hole(
+                screw_struct, length = shell + 10, anchor = "head_top"
+            );
+        } else {
+            flange_rise = flange * tan(flange_angle);
+            prismoid(
+                [ rail_in_d.x, shell / 2 ], [ rail_in_d.x, shell / 2 + flange ],
+                h = flange_rise,
+                shift = [ 0, -flange / 2 ],
+                rounding = [ 0, 0, shell_rounding, shell_rounding ],
+                anchor = BACK + BOT
+            ) position (TOP) fwd(shell / 4) screw_hole(
+                screw_struct, length = shell + 10, anchor = "head_top"
+            );
+        }
+    }
 
     // The top protrusion
     position(TOP) cuboid(
