@@ -20,6 +20,9 @@ slot_height = 20;
 // Shell thickness.
 shell = 1;
 
+// Hose shell.
+hose_shell = 2;
+
 eps = 3;
 
 
@@ -62,3 +65,39 @@ up(eps) difference() {
         anchor = TOP + FRONT
     );
 }
+
+module tube_coupling(add, flat_back, diam, flat_x, flat_y) {
+    // Height of the trapezoidal tube portion.
+    rect_tube_h = slot_d.z - slot_height;
+
+    // If we look directly facing the piece, we ideally want straight diagonal
+    // lines going up from the slot to the hose coupling. This means that the
+    // rectangular trapezoidal part has a with that linearly interpolates the
+    // width between the slot base and the tube coupling.
+    tube_frac = rect_tube_h / (rect_tube_h + coupling_length);
+    upper_wid = lerp(flat_x, diam, tube_frac);
+
+    bot_rect = back(flat_back, rect([ flat_x, flat_y ], anchor = FRONT));
+    mid_rect = back(flat_back, rect([ upper_wid, flat_y ], anchor = FRONT));
+    circ = back(slot_d.y / 2, circle(d = diam));
+    skin([
+        path3d(bot_rect, -add),
+        path3d(bot_rect, eps),
+        path3d(mid_rect, rect_tube_h),
+        path3d(circ, rect_tube_h + coupling_length),
+        path3d(circ, rect_tube_h + coupling_length + eps + add)
+    ], slices = 10, method = "reindex");
+}
+
+difference() {
+    tube_coupling(0, 0, hose_d.x + 2 * hose_shell, slot_d.x, slot_d.y);
+    tube_coupling(
+        eps, shell, hose_d.x, slot_d.x - 2 * shell, slot_d.y - 2 * shell
+    );
+}
+
+up(coupling_length + slot_d.z - slot_height) back(slot_d.y / 2) tube(
+    h = hose_d.y, id = hose_d.x, od = hose_d.x + 2 * hose_shell,
+    anchor = BOT
+);
+
