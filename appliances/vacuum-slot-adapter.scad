@@ -1,70 +1,40 @@
 /*
- * An adapter that lets a vacuum (or an air blower) function in a crevice
- * accessible through a thin slot.
+ * An adapter that lets a vacuum function in a crevice accessible through a thin
+ * slot. This differs from the blower model by not directing the inlet in any
+ * particular direction.
  */
 include <../lib/production.scad>
 include <../BOSL2/std.scad>
 
 // Hose coupling dimensions, in [ hose outer diameter, coupling length ]
-hose_d = [ 32.5, 30 ];
+hose_d = [ 32.25, 40 ];
 
 // Slot dimensions. x and y are the opening size, and z is the downward travel.
-slot_d = [ 150, 7, 60 ];
+slot_d = [ 100, 6, 70 ];
 
 // Length of the coupling from the hose opening to the slot.
-coupling_length = 50;
+coupling_length = 30;
 
 // Height of the opening slot for air to come out.
-slot_height = 20;
+slot_height = 2;
 
 // Shell thickness.
-shell = 1;
+shell = 1.5;
 
 // Hose shell.
 hose_shell = 2;
 
-eps = 3;
+eps = 0.01;
 
-
-/*
- * The curved slot opening area. The XY plane will cut across the top of the
- * slot opening, so the curvature area is lowered accordingly.
- */
-down(slot_height - slot_d.y) difference() {
-    intersection() {
-        // Outer cylinder
-        xcyl(h = slot_d.x, r = slot_d.y);
-        // Limited to the back bottom quadrant, plus an eps extension above.
-        up(eps) cuboid(
-            [ slot_d.x + 2 * eps, slot_d.y + eps, slot_d.z + 2 * eps ],
-            anchor = TOP + FRONT
-        );
-    }
-    // The inner cylinder for removal.
-    xcyl(h = slot_d.x - 2 * shell, r = slot_d.y - shell);
-    // Remove a cuboid above the bottom half of the cylinder, to erase the small
-    // extrusion above the bottom half of the cylinder that the removal cylinder
-    // failed to cut out.
-    cuboid(
-        [ slot_d.x - 2 * shell, slot_d.y - shell, 2 * eps ],
-        anchor = BOT + FRONT
-    );
-}
-
-// The remainder of the opening area.
-up(eps) difference() {
-    rect_h = slot_height - slot_d.y;
-    // The outer rectangular portion.
-    cuboid(
-        [ slot_d.x, slot_d.y, rect_h + eps ],
-        anchor = TOP + FRONT
-    );
-    // The inside portion.
-    up(eps) fwd(eps) cuboid(
-        [ slot_d.x - 2 * shell, slot_d.y - shell + eps, rect_h + 3 * eps ],
-        anchor = TOP + FRONT
-    );
-}
+// The slot area.
+//
+diff() up(eps) cuboid(
+    [ slot_d.x, slot_d.y, slot_height + eps ],
+    anchor = TOP
+) tag("remove") position(FRONT) fwd(eps) cuboid(
+    [ slot_d.x - 2 * shell, slot_d.y + 2 * eps, slot_height + 3 * eps ],
+    anchor = FRONT
+);
 
 module tube_coupling(add, flat_back, diam, flat_x, flat_y) {
     // Height of the trapezoidal tube portion.
@@ -77,9 +47,9 @@ module tube_coupling(add, flat_back, diam, flat_x, flat_y) {
     tube_frac = rect_tube_h / (rect_tube_h + coupling_length);
     upper_wid = lerp(flat_x, diam, tube_frac);
 
-    bot_rect = back(flat_back, rect([ flat_x, flat_y ], anchor = FRONT));
-    mid_rect = back(flat_back, rect([ upper_wid, flat_y ], anchor = FRONT));
-    circ = back(slot_d.y / 2, circle(d = diam));
+    bot_rect = rect([ flat_x, flat_y ]);
+    mid_rect = rect([ upper_wid, flat_y ]);
+    circ = circle(d = diam);
     skin([
         path3d(bot_rect, -add),
         path3d(bot_rect, eps),
@@ -90,13 +60,16 @@ module tube_coupling(add, flat_back, diam, flat_x, flat_y) {
 }
 
 difference() {
+    // Outside face
     tube_coupling(0, 0, hose_d.x + 2 * hose_shell, slot_d.x, slot_d.y);
+    // Remove inside
     tube_coupling(
         eps, shell, hose_d.x, slot_d.x - 2 * shell, slot_d.y - 2 * shell
     );
 }
 
-up(coupling_length + slot_d.z - slot_height) back(slot_d.y / 2) tube(
+// Top hose tube connector
+up(coupling_length + slot_d.z - slot_height) tube(
     h = hose_d.y, id = hose_d.x, od = hose_d.x + 2 * hose_shell,
     anchor = BOT
 );
