@@ -29,10 +29,10 @@ flange = 15;
 flange_shell = 3;
 
 // Amount to raise the flange from flush bottom.
-flange_offset = 0;
+flange_offset = 2;
 
 // Angle of the flange bottom.
-flange_angle = 30;
+flange_angle = 37;
 
 // Type of screw to use for the flange.
 screw_struct = screw_info("#8", head = "flat");
