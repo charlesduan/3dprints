@@ -8,7 +8,7 @@ include <../lib/production.scad>
 card_d = [ 150, 142 ];
 
 // Distance between fold ridges.
-fold_d = 5;
+fold_length = 5;
 
 // Dimensions of the protrusion, in width x height.
 outdent_d = [ 1.75, 1 ];
@@ -57,14 +57,14 @@ diff() {
 
             // Outdents
             xcopies(
-                sp = fold_d, spacing = 2 * fold_d,
-                l = top_d.x - fold_d
+                sp = fold_length, spacing = 2 * fold_length,
+                l = top_d.x - fold_length
             ) outdent_shape(top_d.y);
 
             // Indents
             xcopies(
-                sp = 2 * fold_d, spacing = 2 * fold_d,
-                l = top_d.x - 2 * fold_d
+                sp = 2 * fold_length, spacing = 2 * fold_length,
+                l = top_d.x - 2 * fold_length
             ) indent_shape(top_d.y + 2 * eps);
         }
         // Alignment handle on the left edge.
@@ -91,13 +91,13 @@ left(card_d.x + 20) diff() {
         // Relative to the top left corner of the card area
         position(TOP + LEFT) right(rim_d.x) down(rim_d.z) {
             tag("keep") xcopies(
-                sp = 2 * fold_d, spacing = 2 * fold_d,
-                l = card_d.x - 2 * fold_d - margin_d.x
+                sp = 2 * fold_length, spacing = 2 * fold_length,
+                l = card_d.x - 2 * fold_length - margin_d.x
             ) outdent_shape(card_d.y + 2 * eps);
 
             xcopies(
-                sp = fold_d, spacing = 2 * fold_d,
-                l = card_d.x - fold_d - margin_d.x
+                sp = fold_length, spacing = 2 * fold_length,
+                l = card_d.x - fold_length - margin_d.x
             ) indent_shape(card_d.y);
         }
 
