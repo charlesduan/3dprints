@@ -3,49 +3,43 @@ include <../lib/production.scad>
 
 
 // Size of the card.
-card_d = [ 150, 142 ];
+card_d = [ 154, 95 ];
 
 // Distance between fold ridges.
-fold_len = 5;
+fold_len = 7;
 
 // Additional thickness of the top and bottom plates.
-plate_thickness = 1;
+plate_thickness = 1.5;
 
 // Fold angle.
-fold_angle = 60;
+fold_angle = 120;
 
 // Additional side bearings, in [ thickness, extra height ].
-side_d = [ 1.5, 5 ];
-
-// Offset of the first valley.
-first_offset = 1;
+side_d = [ 1, 10 ];
 
 eps = 0.01;
 
-difference() {
+function fold_y() = fold_len * cos(fold_angle / 2);
+function fold_x() = fold_len * sin(fold_angle / 2);
+function fold_count() = ceil(card_d.x / fold_x());
+function tot_length() = fold_count() * fold_x();
 
-    horiz_factor = sin(fold_angle / 2);
-    fold_height = fold_len * cos(fold_angle / 2) + side_d.y;
+function zigzag() = [
+    for (i = [ 0 : 1 : fold_count() ])
+    [ fold_x() * i, i % 2 == 0 ? 0 : fold_y() ]
+];
 
-    down(plate_thickness) cuboid(
-        [
-            card_d.x * horiz_factor + first_offset,
-            card_d.y + 2 * side_d.x,
-            plate_thickness + fold_height
-        ],
-        anchor = BOTTOM + LEFT
-    );
+back(eps) xrot(90) linear_extrude(card_d.y + eps) polygon(
+    concat(back(plate_thickness, zigzag()), reverse(zigzag()))
+);
 
-    xcopies(
-        spacing = 2 * fold_len * horiz_factor,
-        sp = first_offset,
-        n = ceil(card_d.x / fold_len)
-    ) prismoid(
-        size1 = [ 0, card_d.y ],
-        h = fold_height + eps,
-        xang = 90 + fold_angle / 2,
-        yang = 90,
-        anchor = BOTTOM
-    );
+ycopies(
+    [ -card_d.y, -card_d.y / 2 ]
+) back(side_d.x) xrot(90) linear_extrude(side_d.x) polygon(
+    concat(back(plate_thickness / 2, zigzag()), [[tot_length(), 0], [0, 0]])
+);
 
-}
+cuboid(
+    [ tot_length(), side_d.x, side_d.y + fold_y() ],
+    anchor = FRONT + LEFT + BOTTOM
+);
