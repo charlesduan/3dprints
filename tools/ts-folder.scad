@@ -6,63 +6,47 @@ include <../lib/production.scad>
 include <../BOSL2/std.scad>
 
 // Distance between fold ridges.
-fold_length = 5;
+fold_length = 7.4;
 
 // Size of the card.
-card_d = [ 150, 142 ];
+card_height = 100;
 
 // Number of gear points.
-gear_points = 16;
+gear_points = 10;
 
-// Angle of the tips of the gear.
-gear_angle = 60;
+// Shift of the angle per point.
+angle_shift = 10;
+
+// Angle of the indents of the gear.
+gear_angle = 120;
 
 // Shell thickness for gear.
-gear_shell = 2;
-
-// Thickness of gear struts.
-gear_strut_shell = 1;
-
-// Inner strut count within gear (does not include top and bottom).
-gear_struts = 4;
-
-// Inner hole.
-hole_d = 22;
+gear_shell = 10;
 
 eps = 0.01;
 
-module gear_star() {
-    circ_angle = 360 / gear_points;
+function indent(coord, rot) = let(
+    phi = 90 - gear_angle / 2
+) move(coord, zrot(rot,
+    [
+        [0, 0],
+        fold_length * [cos(phi), sin(phi)],
+        [fold_length * 2 * cos(phi), 0]
+    ]
+));
 
-    inner_r = fold_length * sin(gear_angle / 2) / sin(circ_angle / 2);
-    outer_r = fold_length * cos(gear_angle / 2) + inner_r * cos(circ_angle / 2);
+function gear_arc() = [
+    for (
+        i = 0, pts = indent([0, 0], 0);
+        i < gear_points;
+        i = i + 1, pts = indent(pts[2], i * angle_shift)
+    ) each pts
+];
 
-    difference() {
-        linear_sweep(
-            star(n = gear_points, or = outer_r, ir = inner_r),
-            h = card_d.y,
-            anchor = BOTTOM
-        );
+function add_base(pts, length) = let(
+    last_pt = pts[len(pts) - 1],
+    dir = zrot(90, unit(last_pt - pts[0]))
+) [ pts[0] + length * dir, each pts, last_pt + length * dir ];
 
-        /*
-        gap_space = (card_d.y - gear_strut_shell) / (gear_struts + 1);
-        zcopies(
-            n = gear_struts + 1, spacing = gap_space, sp = gear_strut_shell
-        ) {
-            tube(
-                or = inner_r - gear_shell,
-                id = hole_d + 2 * gear_shell,
-                h = gap_space - gear_strut_shell,
-                anchor = BOTTOM
-            );
-        }
-        */
+linear_extrude(card_height) polygon(add_base(gear_arc(), gear_shell));
 
-        down(eps) cylinder(d = hole_d, h = card_d.y + 2 * eps, anchor = BOT);
-
-    }
-}
-
-//back_half(3 * card_d.y) {
-    gear_star();
-//}

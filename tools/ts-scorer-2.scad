@@ -5,7 +5,7 @@ include <../BOSL2/std.scad>
 include <../lib/production.scad>
 
 // Size of the card.
-card_len = 40;
+card_len = 150;
 
 // Distance between fold ridges.
 fold_len = 7;
@@ -20,7 +20,7 @@ outdent_d = [ 0.6, 1.75, 1 ];
 indent_d = [ 0.6, 2, 1.75 ];
 
 // Additional thickness of the top and bottom plates.
-plate_thickness = 3.5;
+plate_thickness = 4;
 
 // Thickness of the rolling cylinder.
 cyl_thickness = 5;
