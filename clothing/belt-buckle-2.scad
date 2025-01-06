@@ -1,5 +1,5 @@
-include <BOSL2/std.scad>
-include <BOSL2/rounding.scad>
+include <../BOSL2/std.scad>
+include <../BOSL2/rounding.scad>
 include <../lib/production.scad>
 
 outer_width = 60;

@@ -1,4 +1,4 @@
-include <BOSL2/std.scad>
+include <../BOSL2/std.scad>
 include <../lib/production.scad>
 
 /*
@@ -7,7 +7,12 @@ include <../lib/production.scad>
 
 // Dimensions of the object to be framed. The x and y coordinates are the size;
 // the z coordinate is the thickness of the space to provide the object.
-object_d = [ 140, 108, 1.5 ];
+object_d = [ 114, 146, 2 ];
+
+// Extra space to surround the object with.
+extra_d = [ 2, 2, 0 ];
+
+function otot_d() = object_d + extra_d;
 
 // Dimensions of the frame's outer shell.
 shell_d = [ 2, 2, 2 ];
@@ -41,9 +46,9 @@ module four_corners(w, l) {
 
 
 // The height of the inside cavity of the frame.
-function frame_cavity_z() = object_d.z + corner_stay_d.z + extra_thickness;
+function frame_cavity_z() = otot_d().z + corner_stay_d.z + extra_thickness;
 
-assert(hanger_d.z + object_d.z < frame_cavity_z());
+assert(hanger_d.z + otot_d().z < frame_cavity_z());
 
 difference() {
 
@@ -51,8 +56,8 @@ difference() {
     down(shell_d.z) {
         cuboid(
             [
-                object_d.x + 2 * shell_d.x,
-                object_d.y + 2 * shell_d.y,
+                otot_d().x + 2 * shell_d.x,
+                otot_d().y + 2 * shell_d.y,
                 frame_cavity_z() + shell_d.z
             ],
             anchor = BOTTOM,
@@ -62,11 +67,11 @@ difference() {
     }
 
     // Where the object itself goes
-    cuboid([object_d.x, object_d.y, frame_cavity_z() + eps],
+    cuboid([otot_d().x, otot_d().y, frame_cavity_z() + eps],
             anchor = BOTTOM);
 
     // Frame window
-    window_size = point2d(object_d) - 2 * window_overlap_d;
+    window_size = point2d(otot_d()) - 2 * window_overlap_d;
     up(eps) {
         prismoid(
             size2 = window_size,
@@ -79,8 +84,8 @@ difference() {
 }
 
 // Corners
-four_corners(object_d.x + 2 * eps, object_d.y + 2 * eps) {
-    up(object_d.z) {
+four_corners(otot_d().x + 2 * eps, otot_d().y + 2 * eps) {
+    up(otot_d().z) {
         linear_extrude(corner_stay_d.z) {
             polygon([ [0, 0], [corner_stay_d.x + eps, 0],
                     [0, corner_stay_d.y + eps] ]);
@@ -89,7 +94,7 @@ four_corners(object_d.x + 2 * eps, object_d.y + 2 * eps) {
 }
 
 // Hanger
-translate([0, object_d.y / 2 + eps, frame_cavity_z()]) {
+translate([0, otot_d().y / 2 + eps, frame_cavity_z()]) {
     rotate([0, 90, 0]) {
         linear_extrude(hanger_d.x, center = true) {
             polygon([ [0, 0], [hanger_d.z + eps, 0],
