@@ -52,6 +52,13 @@ tab_round = 5;
 // Amount to retain of sides of tab (for determining interior cutout).
 tab_side_keep = 12;
 
+// A stopper that inserts into some of the tab grooves to keep the cards from
+// sliding around. x is the slop for fitting into the grooves, y the number of
+// flanges the stopper spans, z the height. Note that the stopper will have the
+// cross-section of a trapezoid with angle side_angle, so ensure that the height
+// is not so high (but also high enough so the cards sit on it).
+stopper_d = [ 0.2, 3, 10 ];
+
 eps = 0.01;
 
 
@@ -86,6 +93,13 @@ function groove_x_center() = tab_groove_d.x / 2 + (
     inside_width() - 2 * tab_groove_d.x
 ) / 6;
 
+//
+// The space from one groove to the next.
+//
+function groove_spacing() = tab_groove_d.y + tab_groove_d.z;
+
+
+
 difference() {
 
     // Outside shell
@@ -109,18 +123,14 @@ difference() {
     );
 
     //
-    // The space from one groove to the next.
-    //
-    groove_spacing = tab_groove_d.y + tab_groove_d.z;
-    //
-    // Tab grooves are placed every groove_spacing units. The maximum distance
+    // Tab grooves are placed every groove_spacing() units. The maximum distance
     // available for grooves is inside_bot_depth() - tab_groove_d.y. Thus, this
     // calculates the number of grooves that can be placed.
     //
     groove_num = floor(
-        (inside_bot_depth() - tab_groove_d.y) / groove_spacing
+        (inside_bot_depth() - tab_groove_d.y) / groove_spacing()
     );
-    ycopies(spacing = groove_spacing, n = groove_num) {
+    ycopies(spacing = groove_spacing(), n = groove_num) {
         xcopies([ -groove_x_center(), groove_x_center() ]) {
             down(eps) cuboid(
                 [ tab_groove_d.x, tab_groove_d.y, shell + 2 * eps ],
@@ -175,3 +185,35 @@ module tab_body() {
 }
 
 left(outside_width() + 20) tab_body();
+
+module stopper() {
+    depth = tab_groove_d.y + groove_spacing() * (stopper_d.y - 1) - stopper_d.x;
+
+    // The top body.
+    prismoid(
+        size1 = [ card_d.x, depth ],
+        xang = 90,
+        yang = side_angle,
+        h = stopper_d.z,
+        rounding = edge_round,
+        anchor = BOTTOM
+    );
+
+    // The flange inserts.
+    up(eps) ycopies(spacing = groove_spacing(), n = stopper_d.y) xcopies([
+        -groove_x_center(), groove_x_center()
+    ]) cuboid(
+        [
+            tab_groove_d.x - stopper_d.x,
+            tab_groove_d.y - stopper_d.x,
+            shell + eps
+        ],
+        rounding = (tab_groove_d.y - stopper_d.x) / 2 - eps,
+        except = TOP,
+        anchor = TOP
+    );
+}
+
+left(2 * outside_width() + 40) stopper();
+
+

@@ -7,7 +7,7 @@ include <../lib/production.scad>
 
 // Dimensions of the object to be framed. The x and y coordinates are the size;
 // the z coordinate is the thickness of the space to provide the object.
-object_d = [ 90, 160, 1.5 ];
+object_d = [ 140, 108, 1.5 ];
 
 // Dimensions of the frame's outer shell.
 shell_d = [ 2, 2, 2 ];
