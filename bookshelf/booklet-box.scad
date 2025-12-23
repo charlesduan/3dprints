@@ -16,7 +16,8 @@ width = 50;
 // booklets).
 flat_length = 20;
 
-// Front and back height, as fractions of booklet height.
+// Front and back height. A number less than 1 is relative to booklet.y; a
+// number greater than 1 is absolute.
 height_fracs = [ 0.8, 3 * 25.4 ];
 
 // Side shell.
@@ -35,6 +36,10 @@ edge_round = 1;
 // Amount from the box sides (where the fronts and backs of the books will abut)
 // that will not be removed by cutout.
 margin = 25;
+
+// Dip angle of cutout (to avoid paper getting caught on the bottom lip of the
+// margin).
+margin_dip = 20;
 
 // Thickness of a label going in the front edge.
 label_thickness = 1;
@@ -84,11 +89,16 @@ function inside_polygon() = let(
     // We extend the diagonal top edge to the side of the box (ignoring the
     // label area).
     right_point = line_intersection(p, [ [ right_x, 0 ], [ right_x, 1 ] ]),
-    right_line = right_point.y >= 0 ? [ right_point, [ right_point.x, 0 ] ]
-        : [ line_intersection(p, [ [ 0, 0 ], [ 1, 0 ] ]) ]
+
+    md = margin_dip / 2,
+
+    right_line = right_point.y >= md
+        ? [ right_point, [ right_point.x, md ] ]
+        : [ line_intersection(p, [ [ 0, md ], [ 1, md ] ]) ]
 
 ) concat(
-    [ [ 0, 0 ], [ 0, p[0].y ], p[0] ], right_line
+    [ [ right_line[0].x / 2, -md ], [ 0, md ], [ 0, p[0].y ], p[0] ],
+    right_line
 );
 
 difference() {
