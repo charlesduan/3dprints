@@ -7,7 +7,7 @@ include <../lib/production.scad>
 
 // Dimensions of the object to be framed. The x and y coordinates are the size;
 // the z coordinate is the thickness of the space to provide the object.
-object_d = [ 114, 146, 2 ];
+object_d = [ 108, 140, 2 ];
 
 // Extra space to surround the object with.
 extra_d = [ 2, 2, 0 ];
@@ -102,3 +102,12 @@ translate([0, otot_d().y / 2 + eps, frame_cavity_z()]) {
         }
     }
 }
+
+/*
+ * Test that the object fits
+ *
+#cuboid(
+        object_d,
+        anchor = BOTTOM
+);
+*/
