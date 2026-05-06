@@ -9,16 +9,16 @@ include <../lib/production.scad>
 include <../BOSL2/std.scad>
 
 // Thickness of the cove lumber.
-cove_thickness = 0.75 * 25.4;
+cove_thickness = 19.2;
 
 // Diameter of the cable.
-cable_diam = 5;
+cable_diam = 6.5;
 
 // Thickness of the clip.
 shell = 2;
 
 // Length of the clip, in the direction parallel to the cove edge.
-length = 5;
+length = 30;
 
 // Overall width of the clip, from cove edge toward the wall.
 clip_width = 30;
@@ -28,13 +28,13 @@ rounding = 0.5;
 
 // Information about small prongs. x is offset from the end of the clip, y the
 // offset from the top or bottom.
-prong_pos = [ 3, 1 ];
+prong_pos = [ 4, 2 ];
 
 // Size of the prong. x is the base width, y the height.
-prong_size = [ 1.5, 1 ];
+prong_size = [ 2, 1.5 ];
 
 // Number of prongs per side.
-num_prongs = 2;
+num_prongs = 3;
 
 eps = 0.01;
 

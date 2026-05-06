@@ -1,2 +1,2 @@
 %.stl: %.scad
-	openscad -o "$@" "$<"
+	openscad --backend manifold -o "$@" "$<"

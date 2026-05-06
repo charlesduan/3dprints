@@ -1,28 +1,29 @@
 //include <../lib/production.scad>
-include <BOSL2/std.scad>
-include <BOSL2/rounding.scad>
+include <../BOSL2/std.scad>
+include <../BOSL2/rounding.scad>
 include <../lib/morescrews.scad>
 
 // Size of the charger. z axis should be however high the case should go.
-charger = [ 66, 38, 60 ];
+charger = [ 38, 27, 50 ];
 charger_rounding = 2;
 
 // How much not to cut out of the front. x is the width of the side lip, y the
 // rounding radius, z the vertical lip.
-front_lip = [ 8, 10, 0 ];
+front_lip = [ 8, 10, 5 ];
 
 // How large a hole to cut out of the bottom (for a plug).
-bottom_cutout_size = [ 28, 23 ];
+bottom_cutout_size = [ 30, 20 ];
 
 // Offset of the plug cutout, relative to the back right corner of the charger.
-bottom_cutout_offset = [ 3, 7 ];
+bottom_cutout_offset = [ 3, 3 ];
 
 
 // Thickness of the casing
 shell = 0.6 * 5;
 
-// Screw cutout dimensions, [ shank diam, head diam, head depth ].
-screw = [ 5, 9, 4 ];
+// Screw cutout dimensions.
+screw_struct = screw_info("#8", "flat");
+
 
 eps = 0.01;
 
@@ -72,11 +73,13 @@ difference() {
             anchor = BOTTOM + RIGHT + BACK
         );
 
+        position(BACK) fwd(shell) up(charger.z * 1/4) screw_hole(
+            screw_struct, l = shell + 10,
+            counterbore = 5,
+            anchor = "head_top",
+            orient = FRONT
+        );
+
     }
 
-    screw_hole(
-        screw.x, screw.y, screw.z,
-        dir = BACK,
-        at = [ 0, -shell, shell + charger.z * 2/3 ]
-    );
 }

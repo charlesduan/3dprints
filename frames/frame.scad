@@ -102,3 +102,12 @@ translate([0, otot_d().y / 2 + eps, frame_cavity_z()]) {
         }
     }
 }
+
+/*
+ * Test that the object fits
+ *
+#cuboid(
+        object_d,
+        anchor = BOTTOM
+);
+*/

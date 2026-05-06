@@ -1,5 +1,5 @@
 include <../lib/production.scad>
-include <BOSL2/std.scad>
+include <../BOSL2/std.scad>
 include <../lib/nails.scad>
 
 /*
