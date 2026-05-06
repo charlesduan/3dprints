@@ -15,10 +15,10 @@ include <../lib/nails.scad>
 
 cross_sec = [
     // These are for the white frames with a notch in them
-    [ 0, 0 ], [ 2.8, 0 ], [ 2.8, 3 ], [ 5.6, 3 ], [ 5.6, 0 ], [ 7, 0 ]
+    // [ 0, 0 ], [ 2.8, 0 ], [ 2.8, 3 ], [ 5.6, 3 ], [ 5.6, 0 ], [ 7, 0 ]
 
     // This is for the frame.scad frame with a French cleat
-    // [0, 0], [3, 3], [4, 3], [4, 0]
+    [0, 0], [3, 3], [4, 3], [4, 0]
 ];
 
 // Dimensions of the body, ignoring the side profile. x is the width of the
