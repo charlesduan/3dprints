@@ -18,6 +18,8 @@ module thread_mask(name, thickness, thread="coarse", oversize=0,
 }
 
 /*
+ * This is deprecated; now use screw_hole() from BOSL2/screws.scad.
+ *
  * Generates a mask for a hole into which a screw can be set. The top of the
  * screw head is set at the origin, with the screw pointing downwards.
  * Parameters are:
