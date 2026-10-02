@@ -6,7 +6,7 @@ include <../lib/production.scad>
 
 // Remarkable dimensions. x and y should include additional margin. z is the
 // insertion height.
-device_d = [ 188.5, 5, 25 ];
+device_d = [ 188.5, 5, 20 ];
 
 // Size of feet.
 foot_d = [ 7, 0.7 ];
@@ -41,7 +41,7 @@ port_plug_gap = 1.2;
 base_d = [ 5, 60, 3 ];
 
 // Width of the base legs.
-base_leg_width = 20;
+base_leg_width = 25;
 
 // Rounding of base edges.
 base_round = 5;
@@ -117,32 +117,33 @@ module dovetail(basic_size, dovetail_h = base_d.z - dovetail_shell) {
     );
 }
 
-xflip_copy(device_d.x / 2 + shell - base_d.y / 2) {
-    yflip_copy(device_d.y / 2 + shell - eps) {
-        cuboid(
-            [ base_leg_width, base_d.y / 2 + eps, shell ],
-            rounding = shell / 2,
-            except = [ FRONT, BOTTOM ],
-            anchor = FRONT + RIGHT + BOTTOM
-        );
+// Legs.
 
-        difference() {
-            radius = base_d.y / 4;
-            cuboid(
-                [ base_leg_width, radius + eps, radius + shell ],
-                anchor = FRONT + RIGHT + BOTTOM
-            );
-            up(shell + radius) back(radius) right(eps) xcyl(
-                r = radius, l = base_leg_width + 2 * eps,
-                rounding = -shell / 2,
-                anchor = RIGHT
-            );
+function leg_y() = (base_d.y - device_d.y - 2 * shell) / 2;
+difference() {
+
+    union() {
+        body();
+
+        yflip_copy(device_d.y / 2 + shell) {
+
+            xflip_copy(device_d.x / 2 + shell / 2) {
+                convex_offset_extrude(
+                    h = shell,
+                    top = os_circle(r = shell / 2)
+                ) fwd(shell / 2) trapezoid(
+                    h = leg_y() + eps,
+                    w1 = base_leg_width + leg_y(),
+                    w2 = base_leg_width,
+                    rounding = [ shell / 2, shell / 2, 0, 0 ],
+                    shift = -leg_y() / 2,
+                    anchor = FRONT + RIGHT
+                );
+
+            }
         }
     }
-}
 
-difference() {
-    body();
 
     // Internal waste portion of base.
     right(device_d.x / 2) down(eps) cuboid(
